@@ -1,0 +1,1129 @@
+/* 页面级 50% 缩放效果 - 使用zoom实现 */
+html {
+  font-size: 16px;
+}
+
+body {
+  zoom: 0.5;
+  width: 200vw;
+  min-height: 100vh;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+/* 主布局 */
+.app-layout {
+  min-height: 100vh;
+  display: flex;
+  width: 100%;
+}
+
+/* 左侧导航栏固定 */
+.app-sider {
+  position: fixed !important;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 100;
+  overflow: auto;
+  flex: 0 0 160px !important;
+  max-width: 160px !important;
+  min-width: 160px !important;
+  width: 160px !important;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  background: #001529 !important;
+}
+
+/* 确保Sider内部元素背景一致 */
+.app-sider > div {
+  background: #001529 !important;
+}
+
+/* 折叠状态下的导航栏 */
+.app-sider.ant-layout-sider-collapsed {
+  flex: 0 0 30px !important;
+  max-width: 30px !important;
+  min-width: 30px !important;
+  width: 30px !important;
+}
+
+/* 右侧内容区域调整 */
+.app-main-layout {
+  margin-left: 160px;
+  transition: margin-left 0.2s;
+  flex: 1;
+  min-width: 0;
+  background: #f0f2f5;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 折叠状态下的布局调整 */
+.app-sider.ant-layout-sider-collapsed + .app-main-layout {
+  margin-left: 30px;
+}
+
+.logo {
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  background: #001529;
+  z-index: 10;
+}
+
+/* 左侧导航菜单样式优化 */
+.ant-layout-sider .ant-menu {
+  background: #001529;
+  border-right: none;
+}
+
+.ant-layout-sider .ant-menu-item {
+  margin: 4px 8px !important;
+  border-radius: 4px;
+  width: calc(100% - 16px) !important;
+}
+
+/* 导航栏选中项高亮 - 左侧蓝色竖条 */
+.ant-layout-sider .ant-menu-item-selected {
+  background-color: #1890ff !important;
+  position: relative;
+}
+
+.ant-layout-sider .ant-menu-item-selected::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background-color: #40a9ff;
+  border-radius: 0 2px 2px 0;
+}
+
+.ant-layout-sider .ant-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.app-header {
+  background: #fff;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  flex-shrink: 0;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.user-info:hover {
+  background-color: #f5f5f5;
+}
+
+.username {
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+/* 主内容区样式优化 */
+.app-content {
+  margin: 0;
+  padding: 24px 32px 32px;
+  background: #f0f2f5;
+  flex: 1;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* 内容区直接子元素占满空间 */
+.app-content > div {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 内容区卡片样式 - 增大间距 */
+.app-content .ant-card {
+  margin-bottom: 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.app-content .ant-card:last-child {
+  margin-bottom: 0;
+}
+
+.app-content .ant-card-body {
+  padding: 24px;
+}
+
+/* 表格容器样式 - 自适应填充 */
+.app-content .ant-table-wrapper {
+  width: 100%;
+  flex: 1;
+}
+
+/* 表格样式优化 - 增大字体 */
+.ant-table {
+  font-size: 14px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* 全局字体大小调整 */
+body {
+  font-size: 14px;
+}
+
+/* 标题字体增大 */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+}
+
+/* 卡片标题 */
+.ant-card-head-title {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* 表头样式 - 浅灰色背景，增大padding */
+.ant-table-thead > tr > th {
+  background: #f5f7fa !important;
+  font-weight: 600;
+  color: #1f1f1f;
+  border-bottom: 1px solid #e8e8e8;
+  padding: 16px 12px;
+  font-size: 14px;
+}
+
+/* 固定表头时的样式 */
+.ant-table-cell-fix-top {
+  background: #f5f7fa !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+/* 表格行 hover 效果 - 增强 */
+.ant-table-tbody > tr:hover > td {
+  background-color: #e6f7ff !important;
+  transition: background-color 0.2s ease;
+}
+
+/* 表格行选中效果 */
+.ant-table-tbody > tr.ant-table-row-selected > td,
+.ant-table-tbody > tr.ant-table-row-selected:hover > td {
+  background-color: #bae7ff !important;
+}
+
+/* 表格行交替背景色 */
+.ant-table-tbody > tr:nth-child(even) > td {
+  background-color: #fafafa;
+}
+
+.ant-table-tbody > tr:nth-child(even):hover > td {
+  background-color: #e6f7ff !important;
+}
+
+/* 表格单元格样式 - 增大padding */
+.ant-table-tbody > tr > td {
+  padding: 16px 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* 分页样式优化 */
+.pagination-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #fff;
+  border-radius: 0 0 8px 8px;
+  margin-top: -1px;
+  flex-wrap: wrap;
+  gap: 16px;
+  min-height: 64px;
+}
+
+.pagination-total {
+  color: #666;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.pagination-wrapper .ant-pagination {
+  flex-shrink: 0;
+}
+
+/* 分页选择器样式优化 */
+.ant-pagination-options-size-changer {
+  min-width: 110px;
+}
+
+.ant-pagination-options-size-changer .ant-select-selector {
+  padding: 4px 11px !important;
+  height: 32px !important;
+}
+
+.ant-pagination-options-size-changer .ant-select-selection-item {
+  line-height: 24px !important;
+}
+
+.ant-table-footer {
+  background: transparent !important;
+}
+
+/* 登录页面样式 - 适配50%缩放 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-header h2 {
+  margin-bottom: 8px;
+  color: #1890ff;
+}
+
+.login-header p {
+  color: #999;
+  margin: 0;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.login-footer p {
+  color: #999;
+  font-size: 12px;
+  margin: 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  .app-content {
+    margin: 0;
+    padding: 12px;
+  }
+
+  .login-card {
+    width: 90%;
+    margin: 0 20px;
+  }
+}
+
+/* 搜索栏样式优化 */
+.app-content .ant-card:first-child {
+  margin-bottom: 16px;
+  flex-shrink: 0;
+}
+
+/* 按钮间距优化 */
+.app-content .ant-space {
+  gap: 8px !important;
+}
+
+/* 标签样式优化 */
+.ant-tag {
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+/* 统计卡片样式 */
+.ant-statistic-title {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.ant-statistic-content {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+/* Tabs 样式优化 */
+.ant-tabs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.ant-tabs-content {
+  flex: 1;
+}
+
+.ant-tabs-tabpane {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+/* 空状态样式 */
+.ant-empty {
+  margin: 40px 0;
+}
+
+/* ==================== Dashboard 首页样式 - 蜂鸟风神风格 ==================== */
+
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 顶部工具栏 */
+.dashboard-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  padding: 10px 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  margin-bottom: 0;
+}
+
+.toolbar-left {
+  display: flex;
+  align-items: center;
+}
+
+.toolbar-label {
+  color: #666;
+  margin-right: 12px;
+  font-size: 14px;
+}
+
+.toolbar-right {
+  display: flex;
+  align-items: center;
+}
+
+/* 区块样式 */
+.dashboard-section {
+  background: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.stats-section {
+  background: linear-gradient(135deg, #f0f5ff 0%, #e6f7ff 100%);
+  border: 1px solid #d6e4ff;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+
+.section-subtitle {
+  margin-left: 12px;
+  color: #999;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* 统计卡片样式 */
+.stat-card {
+  background: #fff;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.stat-icon {
+  font-size: 24px;
+  color: #1890ff;
+}
+
+.stat-trend {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-value {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1f1f1f;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.stat-footer {
+  border-top: 1px solid #f0f0f0;
+  padding-top: 8px;
+  margin-top: 8px;
+}
+
+.stat-compare {
+  font-size: 12px;
+  color: #999;
+}
+
+/* 卡片标题样式 */
+.card-title {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.card-subtitle {
+  margin-left: 12px;
+  color: #999;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+/* 迷你统计样式 */
+.mini-stat {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: #fafafa;
+  border-radius: 8px;
+  transition: all 0.3s;
+}
+
+.mini-stat:hover {
+  background: #f0f0f0;
+}
+
+.mini-stat-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  margin-right: 12px;
+}
+
+.mini-stat-content {
+  flex: 1;
+}
+
+.mini-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f1f1f;
+  line-height: 1.2;
+}
+
+.mini-stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 快捷操作区 */
+.quick-actions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.quick-actions-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 12px;
+}
+
+.quick-actions-list {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* 日志列表样式 */
+.logs-card .ant-card-body {
+  padding: 0 20px 20px;
+}
+
+.logs-list {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.log-item {
+  border-bottom: 1px solid #f0f0f0;
+  transition: background-color 0.3s;
+}
+
+.log-item:last-child {
+  border-bottom: none;
+}
+
+.log-item:hover {
+  background-color: #fafafa;
+}
+
+.log-content {
+  width: 100%;
+}
+
+.log-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.log-operator {
+  font-weight: 600;
+  color: #1f1f1f;
+  font-size: 13px;
+}
+
+.log-type {
+  font-size: 12px;
+  color: #666;
+  margin-bottom: 2px;
+}
+
+.log-desc {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.log-time {
+  font-size: 11px;
+  color: #bfbfbf;
+}
+
+/* 公告内容样式 */
+.announcement-content {
+  display: flex;
+  gap: 24px;
+}
+
+.announcement-main {
+  flex: 1;
+}
+
+.announcement-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 12px;
+}
+
+.announcement-desc {
+  font-size: 14px;
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.feature-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: #666;
+}
+
+.feature-icon {
+  color: #52c41a;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+/* 快速链接样式 */
+.quick-links-card .ant-card-body {
+  padding: 0 20px 20px;
+}
+
+.quick-links {
+  margin-bottom: 20px;
+}
+
+.quick-link-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-bottom: 8px;
+}
+
+.quick-link-item:last-child {
+  margin-bottom: 0;
+}
+
+.quick-link-item:hover {
+  background-color: #f5f5f5;
+}
+
+.quick-link-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  margin-right: 12px;
+}
+
+.quick-link-text {
+  flex: 1;
+}
+
+.quick-link-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f1f1f;
+}
+
+.quick-link-desc {
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* 登录信息样式 */
+.login-info {
+  padding: 16px;
+  background: #f5f7fa;
+  border-radius: 8px;
+}
+
+.login-info-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f1f1f;
+  margin-bottom: 12px;
+}
+
+.login-info-item {
+  display: flex;
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.login-info-item:last-child {
+  margin-bottom: 0;
+}
+
+.login-info-label {
+  color: #666;
+  width: 50px;
+}
+
+.login-info-value {
+  color: #1890ff;
+  font-weight: 600;
+}
+
+/* ==================== RiderManage 骑手管理样式 ==================== */
+
+.rider-manage-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* 统计卡片区 */
+.rider-manage-container .stats-section {
+  background: #f5f7fa;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.rider-manage-container .stat-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s;
+}
+
+.rider-manage-container .stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.rider-manage-container .stat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.rider-manage-container .stat-icon {
+  font-size: 20px;
+  color: #1890ff;
+}
+
+.rider-manage-container .stat-title {
+  font-size: 13px;
+  color: #666;
+}
+
+.rider-manage-container .stat-trend {
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.rider-manage-container .stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f1f1f;
+  line-height: 1.2;
+}
+
+.rider-manage-container .stat-value-lg {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.rider-manage-container .stat-suffix {
+  font-size: 16px;
+  font-weight: 400;
+  margin-left: 2px;
+}
+
+.rider-manage-container .stat-label {
+  font-size: 13px;
+  color: #666;
+  margin-top: 4px;
+}
+
+/* 进度条 */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background-color: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #722ed1 0%, #b37feb 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* 筛选区 */
+.rider-manage-container .filter-section {
+  padding: 16px 20px;
+}
+
+.filter-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.filter-left {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.filter-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.filter-item {
+  margin-right: 0;
+}
+
+/* 筛选按钮组 */
+.filter-right .ant-btn {
+  white-space: nowrap;
+}
+
+/* 表格顶部进度条 */
+.table-progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1890ff 0%, #52c41a 100%);
+  animation: progressBar 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes progressBar {
+  0% {
+    width: 0;
+    left: 0;
+  }
+  50% {
+    width: 50%;
+    left: 25%;
+  }
+  100% {
+    width: 0;
+    left: 100%;
+  }
+}
+
+/* 表格数据淡入动画 */
+.ant-table-tbody > tr {
+  animation: fadeInRow 0.3s ease;
+}
+
+@keyframes fadeInRow {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 表格区 */
+.rider-manage-container .table-section {
+  flex: 1;
+  padding: 0;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.rider-manage-container .table-section .ant-card-body {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  overflow: visible;
+}
+
+.rider-manage-container .ant-table-wrapper {
+  flex: 1;
+  overflow: visible;
+}
+
+/* 表格高度自适应 */
+.rider-manage-container .ant-table-wrapper .ant-table {
+  height: auto !important;
+}
+
+.rider-manage-container .ant-table-wrapper .ant-table-container {
+  height: auto !important;
+}
+
+/* 表格sticky表头样式 */
+.rider-manage-container .ant-table-wrapper .ant-table-sticky-holder {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+/* 移除表格分页下方的空白 */
+.rider-manage-container .ant-table-wrapper .ant-table-footer {
+  display: none !important;
+}
+
+/* 优化分页区域底部间距 */
+.rider-manage-container .ant-table-wrapper .ant-pagination {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 表格卡片底部无额外间距 */
+.rider-manage-container .table-section .ant-card-body {
+  padding-bottom: 0 !important;
+}
+
+/* 移除Ant Table默认的底部padding */
+.rider-manage-container .ant-table-wrapper .ant-table {
+  margin-bottom: 0 !important;
+}
+
+/* 针对Table组件的底部区域 */
+.rider-manage-container .ant-table-wrapper .ant-table-content {
+  overflow: visible !important;
+}
+
+/* 移除分页容器的外边距 */
+.rider-manage-container .ant-table-wrapper .ant-table-pagination {
+  margin: 0 !important;
+  padding: 8px 0 !important;
+}
+
+/* 确保table-section卡片没有底部margin */
+.rider-manage-container .table-section {
+  margin-bottom: 0 !important;
+}
+
+/* 移除Card组件默认的底部间距 */
+.rider-manage-container .table-section.ant-card {
+  margin-bottom: 0 !important;
+}
+
+/* 分页器禁用状态 */
+.ant-pagination-disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .dashboard-toolbar {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .feature-list {
+    grid-template-columns: 1fr;
+  }
+  
+  .filter-toolbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filter-left {
+    width: 100%;
+  }
+  
+  .filter-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard-section {
+    padding: 16px;
+  }
+  
+  .stat-value {
+    font-size: 24px;
+  }
+  
+  .mini-stat {
+    padding: 12px;
+  }
+  
+  .mini-stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+  
+  .mini-stat-value {
+    font-size: 20px;
+  }
+  
+  .rider-manage-container .stats-section {
+    padding: 12px;
+  }
+  
+  .rider-manage-container .filter-section {
+    padding: 12px;
+  }
+}

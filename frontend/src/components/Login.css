@@ -1,0 +1,42 @@
+/* 登录页面样式 - 适配zoom缩放 */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.login-card {
+  width: 400px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.login-header h2 {
+  margin-bottom: 8px;
+  color: #1890ff;
+}
+
+.login-header p {
+  color: #999;
+  margin: 0;
+}
+
+.login-footer {
+  text-align: center;
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.login-footer p {
+  color: #999;
+  font-size: 12px;
+  margin: 0;
+}
