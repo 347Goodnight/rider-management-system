@@ -94,6 +94,7 @@ const RiderManage = ({ permissions }) => {
   useEffect(() => {
     fetchStations();
     fetchRiders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -108,6 +109,7 @@ const RiderManage = ({ permissions }) => {
 
   useEffect(() => {
     fetchRiders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCity, selectedStation, pagination.current, pagination.pageSize]);
 
   const hasPermission = (permissionId) => permissions.includes(permissionId);

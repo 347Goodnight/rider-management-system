@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Table, DatePicker, Input, Select, Button, message, Card, Space, Tag } from 'antd';
-import { SearchOutlined, DownloadOutlined, ReloadOutlined } from '@ant-design/icons';
-import { getLogs, exportLogs } from '../api';
+import { DownloadOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
+import { Button, Card, DatePicker, Input, message, Select, Space, Table, Tag } from 'antd';
 import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { exportLogs, getLogs } from '../api';
 
 const { RangePicker } = DatePicker;
 const { Option } = Select;
@@ -21,6 +21,7 @@ const LogManage = () => {
 
   useEffect(() => {
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize]);
 
   const fetchLogs = async () => {

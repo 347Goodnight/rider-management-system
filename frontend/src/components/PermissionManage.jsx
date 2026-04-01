@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Tabs, Table, Button, Modal, Form, Input, Select, message, Popconfirm, Tag, Space, Checkbox, Card } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { getUsers, createUser, updateUser, deleteUser, getRoles, getPermissions, createRole, updateRole, deleteRole } from '../api';
+import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Card, Checkbox, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tabs, Tag } from 'antd';
+import { useEffect, useState } from 'react';
+import { createRole, createUser, deleteRole, deleteUser, getPermissions, getRoles, getUsers, updateRole, updateUser } from '../api';
 
 const { TabPane } = Tabs;
 const { Option } = Select;
@@ -27,6 +27,7 @@ const PermissionManage = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize]);
 
   const fetchData = async () => {
