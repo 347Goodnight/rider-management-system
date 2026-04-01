@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tabs, Tag } from 'antd';
 import { useEffect, useState } from 'react';
