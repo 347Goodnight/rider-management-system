@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Card, Checkbox, Form, Input, message, Modal, Popconfirm, Select, Space, Table, Tabs, Tag } from 'antd';
 import { useEffect, useState } from 'react';
@@ -27,28 +26,27 @@ const PermissionManage = () => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
 
   useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.current, pagination.pageSize]);
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const [usersRes, rolesRes, permissionsRes] = await Promise.all([
+          getUsers(),
+          getRoles(),
+          getPermissions()
+        ]);
+        setUsers(usersRes.data.users);
+        setRoles(rolesRes.data.roles);
+        setPermissions(permissionsRes.data.permissions);
+        setPagination(prev => ({ ...prev, total: usersRes.data.users?.length || 0 }));
+      } catch (error) {
+        message.error('获取数据失败');
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const [usersRes, rolesRes, permissionsRes] = await Promise.all([
-        getUsers(),
-        getRoles(),
-        getPermissions()
-      ]);
-      setUsers(usersRes.data.users);
-      setRoles(rolesRes.data.roles);
-      setPermissions(permissionsRes.data.permissions);
-      setPagination({ ...pagination, total: usersRes.data.users?.length || 0 });
-    } catch (error) {
-      message.error('获取数据失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+    fetchData();
+  }, [pagination.current, pagination.pageSize]);
 
   // ========== 用户管理 ==========
   const handleAddUser = () => {
@@ -67,7 +65,15 @@ const PermissionManage = () => {
     try {
       await deleteUser(id);
       message.success('删除成功');
-      fetchData();
+      // 刷新数据
+      const [usersRes, rolesRes, permissionsRes] = await Promise.all([
+        getUsers(),
+        getRoles(),
+        getPermissions()
+      ]);
+      setUsers(usersRes.data.users);
+      setRoles(rolesRes.data.roles);
+      setPermissions(permissionsRes.data.permissions);
     } catch (error) {
       message.error('删除失败');
     }
@@ -84,7 +90,15 @@ const PermissionManage = () => {
         message.success('创建成功');
       }
       setUserModalVisible(false);
-      fetchData();
+      // 刷新数据
+      const [usersRes, rolesRes, permissionsRes] = await Promise.all([
+        getUsers(),
+        getRoles(),
+        getPermissions()
+      ]);
+      setUsers(usersRes.data.users);
+      setRoles(rolesRes.data.roles);
+      setPermissions(permissionsRes.data.permissions);
     } catch (error) {
       message.error(error.response?.data?.message || '操作失败');
     }
@@ -109,7 +123,15 @@ const PermissionManage = () => {
     try {
       await deleteRole(id);
       message.success('删除成功');
-      fetchData();
+      // 刷新数据
+      const [usersRes, rolesRes, permissionsRes] = await Promise.all([
+        getUsers(),
+        getRoles(),
+        getPermissions()
+      ]);
+      setUsers(usersRes.data.users);
+      setRoles(rolesRes.data.roles);
+      setPermissions(permissionsRes.data.permissions);
     } catch (error) {
       message.error('删除失败');
     }
@@ -127,7 +149,15 @@ const PermissionManage = () => {
         message.success('创建成功');
       }
       setRoleModalVisible(false);
-      fetchData();
+      // 刷新数据
+      const [usersRes, rolesRes, permissionsRes] = await Promise.all([
+        getUsers(),
+        getRoles(),
+        getPermissions()
+      ]);
+      setUsers(usersRes.data.users);
+      setRoles(rolesRes.data.roles);
+      setPermissions(permissionsRes.data.permissions);
     } catch (error) {
       message.error(error.response?.data?.message || '操作失败');
     }

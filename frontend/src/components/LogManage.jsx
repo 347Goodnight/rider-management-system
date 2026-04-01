@@ -1,11 +1,10 @@
-/* eslint-disable */
+import { DownloadOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { DownloadOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Input, message, Select, Space, Table, Tag } from 'antd';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-import { exportLogs, getLogs } from '../api';
 
-const { RangePicker } = DatePicker;
+import { exportLogs, getLogs } from '../api';
 const { Option } = Select;
 
 const LogManage = () => {
@@ -21,48 +20,45 @@ const LogManage = () => {
   const logTypes = ['登录', '登出', '骑手管理', '用户管理', '角色管理', '系统操作'];
 
   useEffect(() => {
+    const fetchLogs = async () => {
+      setLoading(true);
+      try {
+        const params = {
+          page: pagination.current,
+          pageSize: pagination.pageSize
+        };
+
+        if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
+          params.startDate = filters.dateRange[0].format('YYYY-MM-DD');
+          params.endDate = filters.dateRange[1].format('YYYY-MM-DD');
+        }
+        if (filters.operator) {
+          params.operator = filters.operator;
+        }
+        if (filters.type) {
+          params.type = filters.type;
+        }
+
+        const response = await getLogs(params);
+        setLogs(response.data.logs);
+        setPagination(prev => ({ ...prev, total: response.data.total }));
+      } catch (error) {
+        message.error('获取日志失败');
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchLogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pagination.current, pagination.pageSize]);
-
-  const fetchLogs = async () => {
-    setLoading(true);
-    try {
-      const params = {
-        page: pagination.current,
-        pageSize: pagination.pageSize
-      };
-
-      if (filters.dateRange && filters.dateRange[0] && filters.dateRange[1]) {
-        params.startDate = filters.dateRange[0].format('YYYY-MM-DD');
-        params.endDate = filters.dateRange[1].format('YYYY-MM-DD');
-      }
-      if (filters.operator) {
-        params.operator = filters.operator;
-      }
-      if (filters.type) {
-        params.type = filters.type;
-      }
-
-      const response = await getLogs(params);
-      setLogs(response.data.logs);
-      setPagination({ ...pagination, total: response.data.total });
-    } catch (error) {
-      message.error('获取日志失败');
-    } finally {
-      setLoading(false);
-    }
-  };
+  }, [pagination.current, pagination.pageSize, filters.dateRange, filters.operator, filters.type]);
 
   const handleSearch = () => {
-    setPagination({ ...pagination, current: 1 });
-    fetchLogs();
+    setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleReset = () => {
     setFilters({ dateRange: null, operator: '', type: undefined });
-    setPagination({ ...pagination, current: 1 });
-    setTimeout(fetchLogs, 0);
+    setPagination(prev => ({ ...prev, current: 1 }));
   };
 
   const handleExport = () => {

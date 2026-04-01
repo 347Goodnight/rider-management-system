@@ -57,25 +57,6 @@ const RiderManage = ({ permissions }) => {
   const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
 
-  // 动态计算表格高度
-  const getTableScrollY = () => {
-    const rowHeight = 64; // 每行高度（增大后的padding）
-    const headerHeight = 64; // 表头高度（增大后的padding）
-    const maxHeight = 800; // 最大高度限制（增大）
-    const targetHeight = 400; // 10条数据时的目标高度（增大）
-
-    // 计算实际需要的总高度
-    const contentHeight = riders.length * rowHeight + headerHeight;
-
-    // 数据少于10条时，使用目标高度；超过时按实际计算，但不超过最大值
-    if (riders.length <= 10) {
-      return targetHeight;
-    }
-
-    // 限制在目标高度和最大高度之间
-    return Math.min(Math.max(contentHeight, targetHeight), maxHeight);
-  };
-
   // 模拟趋势数据
   const [trends] = useState({
     total: { value: 12.5, up: true },
@@ -90,62 +71,15 @@ const RiderManage = ({ permissions }) => {
   const dataCache = useRef({});
   // 当前请求参数缓存
   const currentParams = useRef(null);
-
-  useEffect(() => {
-    fetchStations();
-    fetchRiders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (selectedCity && selectedCity !== 'all') {
-      setFilteredStations(stations[selectedCity] || []);
-      setSelectedStation('all');
-    } else {
-      setFilteredStations([]);
-      setSelectedStation('all');
-    }
-  }, [selectedCity, stations]);
-
-  useEffect(() => {
-    fetchRiders();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCity, selectedStation, pagination.current, pagination.pageSize]);
-
-  const hasPermission = (permissionId) => permissions.includes(permissionId);
-
-  const fetchStations = async () => {
-    try {
-      const response = await getStations();
-      setStations(response.data.stations);
-      setCities(Object.keys(response.data.stations));
-    } catch (error) {
-      message.error('获取站点数据失败');
-    }
-  };
+  // 请求锁
+  const isRequesting = useRef(false);
 
   // 生成缓存key
   const getCacheKey = (params) => {
     return JSON.stringify(params);
   };
 
-  // 预加载数据
-  const preloadData = async (params) => {
-    const cacheKey = getCacheKey(params);
-    if (dataCache.current[cacheKey]) {
-      return dataCache.current[cacheKey];
-    }
-
-    try {
-      const response = await getRiders(params);
-      const data = response.data.riders || [];
-      dataCache.current[cacheKey] = data;
-      return data;
-    } catch (error) {
-      return [];
-    }
-  };
-
+  // 获取骑手数据
   const fetchRiders = async () => {
     // 如果正在请求中，直接返回
     if (isRequesting.current) {
@@ -195,10 +129,6 @@ const RiderManage = ({ permissions }) => {
 
       setRiders(data);
       setPagination(prev => ({ ...prev, total: data.length }));
-
-      // 预加载相邻筛选条件的数据（非阻塞）
-      const preloadParams = { ...params };
-      // 这里可以预加载其他常用筛选条件的数据
     } catch (error) {
       // 如果是取消请求，不显示错误
       if (error.name !== 'CanceledError' && error.name !== 'AbortError') {
@@ -209,6 +139,40 @@ const RiderManage = ({ permissions }) => {
       setLoading(false);
     }
   };
+
+  // 初始加载
+  useEffect(() => {
+    const fetchStations = async () => {
+      try {
+        const response = await getStations();
+        setStations(response.data.stations);
+        setCities(Object.keys(response.data.stations));
+      } catch (error) {
+        message.error('获取站点数据失败');
+      }
+    };
+
+    fetchStations();
+    fetchRiders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (selectedCity && selectedCity !== 'all') {
+      setFilteredStations(stations[selectedCity] || []);
+      setSelectedStation('all');
+    } else {
+      setFilteredStations([]);
+      setSelectedStation('all');
+    }
+  }, [selectedCity, stations]);
+
+  useEffect(() => {
+    fetchRiders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCity, selectedStation, pagination.current, pagination.pageSize]);
+
+  const hasPermission = (permissionId) => permissions.includes(permissionId);
 
   const handleAdd = () => {
     setEditingRider(null);
@@ -330,10 +294,6 @@ const RiderManage = ({ permissions }) => {
     setTimeout(fetchRiders, 0);
   };
 
-  // 防抖定时器和请求锁
-  const debounceTimer = useRef(null);
-  const isRequesting = useRef(false);
-
   // 重置表格滚动位置
   const resetTableScroll = () => {
     const tableBody = document.querySelector('.rider-manage-container .ant-table-body');
@@ -385,36 +345,36 @@ const RiderManage = ({ permissions }) => {
   };
 
   const columns = [
-    { 
-      title: '骑手ID', 
-      dataIndex: 'riderId', 
-      key: 'riderId', 
-      width: 110, 
+    {
+      title: '骑手ID',
+      dataIndex: 'riderId',
+      key: 'riderId',
+      width: 110,
       fixed: 'left',
       align: 'right',
       ellipsis: true
     },
-    { 
-      title: '姓名', 
-      dataIndex: 'name', 
-      key: 'name', 
-      width: 90, 
+    {
+      title: '姓名',
+      dataIndex: 'name',
+      key: 'name',
+      width: 90,
       fixed: 'left',
       align: 'left'
     },
-    { 
-      title: '手机号', 
-      dataIndex: 'phone', 
-      key: 'phone', 
-      width: 115, 
+    {
+      title: '手机号',
+      dataIndex: 'phone',
+      key: 'phone',
+      width: 115,
       fixed: 'left',
       align: 'right'
     },
-    { 
-      title: '部门', 
-      dataIndex: 'department', 
-      key: 'department', 
-      width: 180, 
+    {
+      title: '部门',
+      dataIndex: 'department',
+      key: 'department',
+      width: 180,
       fixed: 'left',
       align: 'left',
       ellipsis: true,
@@ -424,141 +384,141 @@ const RiderManage = ({ permissions }) => {
         </Tooltip>
       )
     },
-    { 
-      title: '状态', 
-      dataIndex: 'status', 
-      key: 'status', 
-      width: 70, 
+    {
+      title: '状态',
+      dataIndex: 'status',
+      key: 'status',
+      width: 70,
       align: 'center',
-      render: getStatusTag 
+      render: getStatusTag
     },
-    { 
-      title: '骑手状态', 
-      dataIndex: 'riderStatus', 
-      key: 'riderStatus', 
-      width: 90, 
+    {
+      title: '骑手状态',
+      dataIndex: 'riderStatus',
+      key: 'riderStatus',
+      width: 90,
       align: 'center',
-      render: getRiderStatusTag 
+      render: getRiderStatusTag
     },
-    { 
-      title: '入职时间', 
-      dataIndex: 'entryDate', 
-      key: 'entryDate', 
-      width: 110, 
+    {
+      title: '入职时间',
+      dataIndex: 'entryDate',
+      key: 'entryDate',
+      width: 110,
       align: 'center',
-      render: formatDate 
+      render: formatDate
     },
-    { 
-      title: '入职性质', 
-      dataIndex: 'employmentType', 
-      key: 'employmentType', 
-      width: 75, 
+    {
+      title: '入职性质',
+      dataIndex: 'employmentType',
+      key: 'employmentType',
+      width: 75,
       align: 'center'
     },
-    { 
-      title: '入职来源', 
-      dataIndex: 'employmentSource', 
-      key: 'employmentSource', 
-      width: 90, 
+    {
+      title: '入职来源',
+      dataIndex: 'employmentSource',
+      key: 'employmentSource',
+      width: 90,
       align: 'left',
       ellipsis: true,
       render: (text) => text || <span style={{ color: '#bfbfbf' }}>--</span>
     },
-    { 
-      title: '推荐人', 
-      dataIndex: 'referrer', 
-      key: 'referrer', 
-      width: 80, 
+    {
+      title: '推荐人',
+      dataIndex: 'referrer',
+      key: 'referrer',
+      width: 80,
       align: 'left',
       ellipsis: true,
       render: (text) => text || <span style={{ color: '#bfbfbf' }}>--</span>
     },
-    { 
-      title: '单价', 
-      dataIndex: 'unitPrice', 
-      key: 'unitPrice', 
-      width: 75, 
+    {
+      title: '单价',
+      dataIndex: 'unitPrice',
+      key: 'unitPrice',
+      width: 75,
       align: 'right',
-      render: (t) => t ? `${t}元` : <span style={{ color: '#bfbfbf' }}>--</span> 
+      render: (t) => t ? `${t}元` : <span style={{ color: '#bfbfbf' }}>--</span>
     },
-    { 
-      title: '结算频率', 
-      dataIndex: 'settlementFrequency', 
-      key: 'settlementFrequency', 
-      width: 85, 
+    {
+      title: '结算频率',
+      dataIndex: 'settlementFrequency',
+      key: 'settlementFrequency',
+      width: 85,
       align: 'center',
       render: (text) => text || <span style={{ color: '#bfbfbf' }}>--</span>
     },
-    { 
-      title: '调整记录', 
-      dataIndex: 'adjustmentInfo', 
-      key: 'adjustmentInfo', 
-      width: 150, 
+    {
+      title: '调整记录',
+      dataIndex: 'adjustmentInfo',
+      key: 'adjustmentInfo',
+      width: 150,
       align: 'left',
       ellipsis: true,
       render: (text) => text || <span style={{ color: '#bfbfbf' }}>--</span>
     },
-    { 
-      title: '银行卡', 
-      dataIndex: 'hasBankCard', 
-      key: 'hasBankCard', 
-      width: 70, 
+    {
+      title: '银行卡',
+      dataIndex: 'hasBankCard',
+      key: 'hasBankCard',
+      width: 70,
       align: 'center',
-      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag> 
+      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag>
     },
-    { 
-      title: '宿舍', 
-      dataIndex: 'hasDormitory', 
-      key: 'hasDormitory', 
-      width: 60, 
+    {
+      title: '宿舍',
+      dataIndex: 'hasDormitory',
+      key: 'hasDormitory',
+      width: 60,
       align: 'center',
-      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag> 
+      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag>
     },
-    { 
-      title: '租车', 
-      dataIndex: 'hasCompanyRental', 
-      key: 'hasCompanyRental', 
-      width: 60, 
+    {
+      title: '租车',
+      dataIndex: 'hasCompanyRental',
+      key: 'hasCompanyRental',
+      width: 60,
       align: 'center',
-      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag> 
+      render: (t) => <Tag color={t === '是' ? 'green' : 'default'} size="small">{t || '否'}</Tag>
     },
-    { 
-      title: '头盔', 
-      dataIndex: 'helmetCount', 
-      key: 'helmetCount', 
-      width: 55, 
+    {
+      title: '头盔',
+      dataIndex: 'helmetCount',
+      key: 'helmetCount',
+      width: 55,
       align: 'center',
-      render: (t) => t || '0' 
+      render: (t) => t || '0'
     },
-    { 
-      title: '制服', 
-      dataIndex: 'uniformCount', 
-      key: 'uniformCount', 
-      width: 55, 
+    {
+      title: '制服',
+      dataIndex: 'uniformCount',
+      key: 'uniformCount',
+      width: 55,
       align: 'center',
-      render: (t) => t || '0' 
+      render: (t) => t || '0'
     },
-    { 
-      title: '餐箱', 
-      dataIndex: 'foodBoxCount', 
-      key: 'foodBoxCount', 
-      width: 55, 
+    {
+      title: '餐箱',
+      dataIndex: 'foodBoxCount',
+      key: 'foodBoxCount',
+      width: 55,
       align: 'center',
-      render: (t) => t || '0' 
+      render: (t) => t || '0'
     },
-    { 
-      title: '合同', 
-      dataIndex: 'hasContract', 
-      key: 'hasContract', 
-      width: 70, 
+    {
+      title: '合同',
+      dataIndex: 'hasContract',
+      key: 'hasContract',
+      width: 70,
       align: 'center',
-      render: (t) => <Tag color={t === '已签' ? 'green' : 'red'} size="small">{t || '未签'}</Tag> 
+      render: (t) => <Tag color={t === '已签' ? 'green' : 'red'} size="small">{t || '未签'}</Tag>
     },
-    { 
-      title: '备注', 
-      dataIndex: 'remark', 
-      key: 'remark', 
-      width: 120, 
+    {
+      title: '备注',
+      dataIndex: 'remark',
+      key: 'remark',
+      width: 120,
       align: 'left',
       ellipsis: true,
       render: (text) => text || <span style={{ color: '#bfbfbf' }}>--</span>
@@ -658,8 +618,8 @@ const RiderManage = ({ permissions }) => {
                 {fullTimeRatio}<span className="stat-suffix">%</span>
               </div>
               <div className="progress-bar-container">
-                <div 
-                  className="progress-bar" 
+                <div
+                  className="progress-bar"
                   style={{ width: `${fullTimeRatio}%` }}
                 />
               </div>
@@ -768,9 +728,9 @@ const RiderManage = ({ permissions }) => {
           </div>
           <div className="filter-right">
             {hasPermission('rider_create') && (
-              <Button 
-                type="primary" 
-                icon={<PlusOutlined />} 
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
                 onClick={handleAdd}
                 size="middle"
               >
@@ -778,12 +738,12 @@ const RiderManage = ({ permissions }) => {
               </Button>
             )}
             {hasPermission('rider_import') && (
-              <Upload 
-                beforeUpload={handleImport} 
-                showUploadList={false} 
+              <Upload
+                beforeUpload={handleImport}
+                showUploadList={false}
                 accept=".xlsx,.xls"
               >
-                <Button 
+                <Button
                   icon={<UploadOutlined />}
                   size="middle"
                   style={{ marginLeft: 8 }}
@@ -793,8 +753,8 @@ const RiderManage = ({ permissions }) => {
               </Upload>
             )}
             {hasPermission('rider_export') && (
-              <Button 
-                icon={<DownloadOutlined />} 
+              <Button
+                icon={<DownloadOutlined />}
                 onClick={handleExport}
                 size="middle"
                 style={{ marginLeft: 8 }}
@@ -803,17 +763,17 @@ const RiderManage = ({ permissions }) => {
               </Button>
             )}
             {hasPermission('rider_delete_all') && (
-              <Popconfirm 
-                title="警告" 
-                description="确定要删除所有骑手数据吗？此操作不可恢复！" 
-                onConfirm={handleDeleteAll} 
-                okText="确定删除" 
-                cancelText="取消" 
+              <Popconfirm
+                title="警告"
+                description="确定要删除所有骑手数据吗？此操作不可恢复！"
+                onConfirm={handleDeleteAll}
+                okText="确定删除"
+                cancelText="取消"
                 okButtonProps={{ danger: true }}
                 icon={<ExclamationCircleOutlined style={{ color: 'red' }} />}
               >
-                <Button 
-                  danger 
+                <Button
+                  danger
                   ghost
                   icon={<DeleteOutlined />}
                   size="middle"
@@ -853,20 +813,20 @@ const RiderManage = ({ permissions }) => {
         />
       </Card>
 
-      <RiderForm 
-        open={formVisible} 
-        onCancel={() => { setFormVisible(false); setEditingRider(null); }} 
-        onSubmit={handleFormSubmit} 
-        initialValues={editingRider} 
-        stations={stations} 
-        cities={cities} 
+      <RiderForm
+        open={formVisible}
+        onCancel={() => { setFormVisible(false); setEditingRider(null); }}
+        onSubmit={handleFormSubmit}
+        initialValues={editingRider}
+        stations={stations}
+        cities={cities}
       />
 
-      <Modal 
-        title="导入结果" 
-        open={importModalVisible} 
-        onOk={() => setImportModalVisible(false)} 
-        onCancel={() => setImportModalVisible(false)} 
+      <Modal
+        title="导入结果"
+        open={importModalVisible}
+        onOk={() => setImportModalVisible(false)}
+        onCancel={() => setImportModalVisible(false)}
         width={600}
       >
         {importResult && (
