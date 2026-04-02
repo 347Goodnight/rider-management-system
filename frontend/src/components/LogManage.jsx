@@ -1,10 +1,9 @@
 import { DownloadOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
-import { DownloadOutlined, ReloadOutlined, SearchOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Input, message, Select, Space, Table, Tag } from 'antd';
 import moment from 'moment';
 import { useEffect, useState } from 'react';
-
 import { exportLogs, getLogs } from '../api';
+
 const { Option } = Select;
 
 const LogManage = () => {
