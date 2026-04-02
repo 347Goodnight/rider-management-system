@@ -278,13 +278,8 @@ def get_stations():
     """获取所有站点"""
     data = load_data()
     stations = data.get('stations', DEFAULT_STATIONS)
-    
-    result = []
-    for city, station_list in stations.items():
-        for station in station_list:
-            result.append({"city": city, "name": station})
-    
-    return jsonify({"success": True, "data": result})
+
+    return jsonify({"success": True, "data": {"stations": stations}})
 
 
 # ========== 骑手管理接口 ==========

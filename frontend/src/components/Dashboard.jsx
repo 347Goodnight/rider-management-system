@@ -8,7 +8,6 @@ import {
   FileTextOutlined,
   ImportOutlined,
   PlusOutlined,
-  RiseOutlined,
   TeamOutlined,
   ThunderboltOutlined,
   UserOutlined
@@ -68,10 +67,13 @@ const Dashboard = ({ onNavigate }) => {
   const fetchStations = async () => {
     try {
       const response = await getStations();
-      setStations(response.data.stations);
-      setCities(Object.keys(response.data.stations));
+      const stationsData = response.data?.stations || {};
+      setStations(stationsData);
+      setCities(Object.keys(stationsData));
     } catch (error) {
       console.error('获取站点数据失败:', error);
+      setStations({});
+      setCities([]);
     }
   };
 
