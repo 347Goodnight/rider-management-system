@@ -17,7 +17,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "CI=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
+    "build": "set REACT_APP_API_URL=https://347goodnight.pythonanywhere.com/api&& CI=false DISABLE_ESLINT_PLUGIN=true react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
