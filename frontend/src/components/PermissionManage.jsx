@@ -46,6 +46,7 @@ const PermissionManage = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize]);
 
   // ========== 用户管理 ==========

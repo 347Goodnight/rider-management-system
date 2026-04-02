@@ -58,12 +58,12 @@ const RiderManage = ({ permissions }) => {
   const [showAdvancedFilter, setShowAdvancedFilter] = useState(false);
 
   // 模拟趋势数据
-  const [trends] = useState({
+  const trends = {
     total: { value: 12.5, up: true },
     active: { value: 8.3, up: true },
     fullTime: { value: 5.2, up: true },
     ratio: { value: 2.1, up: false }
-  });
+  };
 
   // 请求取消控制器
   const abortController = useRef(null);
@@ -153,6 +153,11 @@ const RiderManage = ({ permissions }) => {
     };
 
     fetchStations();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 加载骑手数据
+  useEffect(() => {
     fetchRiders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -170,7 +175,7 @@ const RiderManage = ({ permissions }) => {
   useEffect(() => {
     fetchRiders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCity, selectedStation, pagination.current, pagination.pageSize]);
+  }, [selectedCity, selectedStation, pagination.current, pagination.pageSize, dateRange, searchKeyword, searchType]);
 
   const hasPermission = (permissionId) => permissions.includes(permissionId);
 

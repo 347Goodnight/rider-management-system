@@ -50,6 +50,7 @@ const LogManage = () => {
     };
 
     fetchLogs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination.current, pagination.pageSize, filters.dateRange, filters.operator, filters.type]);
 
   const handleSearch = () => {
