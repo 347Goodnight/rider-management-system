@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // 根据环境自动切换 API 地址
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:3001/api';
 
 // 创建 axios 实例
 const api = axios.create({
@@ -89,7 +89,7 @@ export const exportRiders = async (params = {}) => {
     params,
     responseType: 'blob' // 重要：设置响应类型为 blob
   });
-  
+
   // 创建下载链接
   const blob = new Blob([response.data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   const url = window.URL.createObjectURL(blob);
