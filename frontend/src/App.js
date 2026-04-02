@@ -107,8 +107,14 @@ function App() {
 
   // 检查是否有权限
   const hasPermission = (permissionId) => {
+    console.log('Checking permission:', permissionId, 'in', permissions);
     return permissions.includes(permissionId);
   };
+
+  // 调试权限
+  console.log('Current permissions:', permissions);
+  console.log('Permissions type:', typeof permissions);
+  console.log('Is array:', Array.isArray(permissions));
 
   // 菜单项配置
   const menuItems = [
@@ -137,6 +143,8 @@ function App() {
       show: hasPermission('log_view')
     }
   ].filter(item => item.show);
+
+  console.log('Menu items:', menuItems);
 
   // 渲染当前页面
   const renderPage = () => {
