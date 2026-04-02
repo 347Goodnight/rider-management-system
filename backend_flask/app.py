@@ -195,14 +195,17 @@ def login():
     save_data(data)
     
     role = next((r for r in data.get('roles', []) if r.get('id') == user.get('roleId')), None)
-    
+
+    # 获取用户权限
+    permissions = role.get('permissions', []) if role else []
+
     add_log({
         "type": "登录",
         "content": f"用户 {username} 登录成功",
         "operator": username,
         "result": "成功"
     })
-    
+
     return jsonify({
         "success": True,
         "data": {
@@ -213,7 +216,8 @@ def login():
                 "name": user['name'],
                 "roleId": user['roleId'],
                 "roleName": role['name'] if role else ''
-            }
+            },
+            "permissions": permissions
         }
     })
 
@@ -248,15 +252,21 @@ def get_current_user():
         return jsonify({"success": False, "message": "登录已过期"}), 401
     
     role = next((r for r in data.get('roles', []) if r.get('id') == user.get('roleId')), None)
-    
+
+    # 获取用户权限
+    permissions = role.get('permissions', []) if role else []
+
     return jsonify({
         "success": True,
         "data": {
-            "id": user['id'],
-            "username": user['username'],
-            "name": user['name'],
-            "roleId": user['roleId'],
-            "roleName": role['name'] if role else ''
+            "user": {
+                "id": user['id'],
+                "username": user['username'],
+                "name": user['name'],
+                "roleId": user['roleId'],
+                "roleName": role['name'] if role else ''
+            },
+            "permissions": permissions
         }
     })
 
