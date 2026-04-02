@@ -33,13 +33,22 @@ function App() {
     const token = localStorage.getItem('token');
     const savedUser = localStorage.getItem('user');
     const savedPermissions = localStorage.getItem('permissions');
-    
-    if (token && savedUser) {
-      setUser(JSON.parse(savedUser));
-      setPermissions(JSON.parse(savedPermissions || '[]'));
-      setIsLoggedIn(true);
-      // 验证token有效性
-      validateToken();
+
+    if (token && savedUser && savedUser !== 'undefined') {
+      try {
+        setUser(JSON.parse(savedUser));
+        setPermissions(JSON.parse(savedPermissions || '[]'));
+        setIsLoggedIn(true);
+        // 验证token有效性
+        validateToken();
+      } catch (error) {
+        console.error('解析用户数据失败:', error);
+        // 清除无效的登录数据
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('permissions');
+        setLoading(false);
+      }
     } else {
       setLoading(false);
     }
@@ -63,10 +72,22 @@ function App() {
   const handleLogin = () => {
     const savedUser = localStorage.getItem('user');
     const savedPermissions = localStorage.getItem('permissions');
-    setUser(JSON.parse(savedUser));
-    setPermissions(JSON.parse(savedPermissions || '[]'));
-    setIsLoggedIn(true);
-    setLoading(false);
+    try {
+      if (savedUser && savedUser !== 'undefined') {
+        setUser(JSON.parse(savedUser));
+      }
+      if (savedPermissions && savedPermissions !== 'undefined') {
+        setPermissions(JSON.parse(savedPermissions));
+      } else {
+        setPermissions([]);
+      }
+      setIsLoggedIn(true);
+    } catch (error) {
+      console.error('解析登录数据失败:', error);
+      setPermissions([]);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleLogout = async () => {
