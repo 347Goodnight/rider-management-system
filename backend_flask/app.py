@@ -8,18 +8,20 @@ from datetime import datetime
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
-# 允许 Vercel 前端访问
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "https://rider-management-system-radw.vercel.app",
-            "http://localhost:3000",
-            "http://localhost:3001"
-        ],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+
+# 全局 CORS 配置
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', 'https://rider-management-system-radw.vercel.app')
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
+    response.headers.add('Access-Control-Allow-Credentials', 'true')
+    return response
+
+# 处理 OPTIONS 预检请求
+@app.route('/api/<path:path>', methods=['OPTIONS'])
+def handle_options(path):
+    return '', 200
 
 # 配置
 DATA_FILE = os.path.join(os.path.dirname(__file__), 'data.json')
