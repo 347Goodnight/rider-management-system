@@ -34,9 +34,9 @@ const PermissionManage = () => {
           getRoles(),
           getPermissions()
         ]);
-        setUsers(usersRes.data.users);
-        setRoles(rolesRes.data.roles);
-        setPermissions(permissionsRes.data.permissions);
+        setUsers(usersRes.data.users || []);
+        setRoles(rolesRes.data.roles || []);
+        setPermissions(permissionsRes.data.permissions || []);
         setPagination(prev => ({ ...prev, total: usersRes.data.users?.length || 0 }));
       } catch (error) {
         message.error('获取数据失败');
@@ -164,7 +164,7 @@ const PermissionManage = () => {
   };
 
   // 按模块分组权限
-  const permissionsByModule = permissions.reduce((acc, perm) => {
+  const permissionsByModule = (permissions || []).reduce((acc, perm) => {
     if (!acc[perm.module]) {
       acc[perm.module] = [];
     }
