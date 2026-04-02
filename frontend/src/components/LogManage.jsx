@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { exportLogs, getLogs } from '../api';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 const LogManage = () => {
   const [logs, setLogs] = useState([]);
