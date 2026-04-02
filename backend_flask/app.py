@@ -194,10 +194,19 @@ def login():
     user['lastLoginAt'] = datetime.now().isoformat()
     save_data(data)
     
-    role = next((r for r in data.get('roles', []) if r.get('id') == user.get('roleId')), None)
+    # 如果没有角色数据，使用默认角色
+    roles = data.get('roles', DEFAULT_ROLES)
+    if not roles:
+        roles = DEFAULT_ROLES
 
-    # 获取用户权限
-    permissions = role.get('permissions', []) if role else []
+    role = next((r for r in roles if r.get('id') == user.get('roleId')), None)
+
+    # 获取用户权限，如果没有则使用默认权限
+    if role and role.get('permissions'):
+        permissions = role['permissions']
+    else:
+        # 如果角色没有权限，返回默认权限（admin 拥有所有权限）
+        permissions = [p["id"] for p in DEFAULT_PERMISSIONS] if user.get('roleId') == 'admin' else []
 
     add_log({
         "type": "登录",
@@ -215,7 +224,7 @@ def login():
                 "username": user['username'],
                 "name": user['name'],
                 "roleId": user['roleId'],
-                "roleName": role['name'] if role else ''
+                "roleName": role['name'] if role else '管理员'
             },
             "permissions": permissions
         }
@@ -243,18 +252,27 @@ def get_current_user():
     token = request.headers.get('Authorization', '').replace('Bearer ', '')
     if not token:
         return jsonify({"success": False, "message": "未登录"}), 401
-    
+
     data = load_data()
-    user = next((u for u in data.get('users', []) 
+    user = next((u for u in data.get('users', [])
                  if u.get('token') == token and u.get('status') == 'active'), None)
-    
+
     if not user:
         return jsonify({"success": False, "message": "登录已过期"}), 401
-    
-    role = next((r for r in data.get('roles', []) if r.get('id') == user.get('roleId')), None)
 
-    # 获取用户权限
-    permissions = role.get('permissions', []) if role else []
+    # 如果没有角色数据，使用默认角色
+    roles = data.get('roles', DEFAULT_ROLES)
+    if not roles:
+        roles = DEFAULT_ROLES
+
+    role = next((r for r in roles if r.get('id') == user.get('roleId')), None)
+
+    # 获取用户权限，如果没有则使用默认权限
+    if role and role.get('permissions'):
+        permissions = role['permissions']
+    else:
+        # 如果角色没有权限，返回默认权限（admin 拥有所有权限）
+        permissions = [p["id"] for p in DEFAULT_PERMISSIONS] if user.get('roleId') == 'admin' else []
 
     return jsonify({
         "success": True,
@@ -264,7 +282,7 @@ def get_current_user():
                 "username": user['username'],
                 "name": user['name'],
                 "roleId": user['roleId'],
-                "roleName": role['name'] if role else ''
+                "roleName": role['name'] if role else '管理员'
             },
             "permissions": permissions
         }
