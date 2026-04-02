@@ -289,6 +289,44 @@ def get_current_user():
     })
 
 
+# ========== 调试接口 ==========
+
+@app.route('/api/debug/permissions', methods=['GET'])
+def debug_permissions():
+    """调试权限接口"""
+    token = request.headers.get('Authorization', '').replace('Bearer ', '')
+    data = load_data()
+
+    # 获取当前用户
+    user = next((u for u in data.get('users', [])
+                 if u.get('token') == token and u.get('status') == 'active'), None)
+
+    # 获取角色
+    roles = data.get('roles', DEFAULT_ROLES)
+    role = next((r for r in roles if r.get('id') == user.get('roleId')), None) if user else None
+
+    # 获取权限
+    if role and role.get('permissions'):
+        permissions = role['permissions']
+    else:
+        permissions = [p["id"] for p in DEFAULT_PERMISSIONS] if user and user.get('roleId') == 'admin' else []
+
+    return jsonify({
+        "success": True,
+        "debug": {
+            "has_token": bool(token),
+            "user_found": bool(user),
+            "user_roleId": user.get('roleId') if user else None,
+            "role_found": bool(role),
+            "role_name": role.get('name') if role else None,
+            "permissions_count": len(permissions),
+            "permissions": permissions,
+            "data_roles_count": len(data.get('roles', [])),
+            "default_roles_count": len(DEFAULT_ROLES)
+        }
+    })
+
+
 # ========== 站点接口 ==========
 
 @app.route('/api/stations', methods=['GET'])
