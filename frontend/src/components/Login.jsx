@@ -21,12 +21,12 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     try {
       const response = await login(values.username, values.password);
-      const { token, user, permissions } = response.data;
-      
+      const { token, user, permissions } = response.data.data;
+
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('permissions', JSON.stringify(permissions));
-      
+
       message.success('登录成功');
       onLogin();
     } catch (error) {
